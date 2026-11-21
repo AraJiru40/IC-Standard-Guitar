@@ -85,6 +85,79 @@ juce::File SampleBank::resolveSamplesDirectory(const juce::File& candidate)
     return candidate;
 }
 
+namespace
+{
+juce::File getSettingsFile()
+{
+    return juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+        .getChildFile("Application Support")
+        .getChildFile("ICStandardGuitar")
+        .getChildFile("settings.xml");
+}
+} // namespace
+
+juce::File SampleBank::getSavedSamplesDirectory()
+{
+    const auto settingsFile = getSettingsFile();
+    if (!settingsFile.existsAsFile())
+        return {};
+
+    if (auto xml = juce::XmlDocument::parse(settingsFile))
+    {
+        const juce::String savedPath = xml->getStringAttribute("samplesPath").trim();
+        if (savedPath.isNotEmpty())
+        {
+            const auto resolved = resolveSamplesDirectory(juce::File(savedPath));
+            if (resolved.isDirectory() && resolved.getChildFile("Sus_Down").isDirectory())
+                return resolved;
+        }
+    }
+    return {};
+}
+
+void SampleBank::saveSamplesDirectoryPreference(const juce::File& dir)
+{
+    const auto resolved = resolveSamplesDirectory(dir);
+    if (!resolved.isDirectory() || !resolved.getChildFile("Sus_Down").isDirectory())
+        return;
+
+    const auto settingsFile = getSettingsFile();
+    const auto parent = settingsFile.getParentDirectory();
+    if (!parent.isDirectory())
+        parent.createDirectory();
+
+    juce::XmlElement root("ICStandardGuitarSettings");
+    root.setAttribute("samplesPath", resolved.getFullPathName());
+    root.writeTo(settingsFile);
+}
+
+juce::File SampleBank::getDefaultSamplesDirectory()
+{
+    if (const auto saved = getSavedSamplesDirectory(); saved.isDirectory())
+        return saved;
+
+    const auto music = juce::File::getSpecialLocation(juce::File::userMusicDirectory);
+    const auto home = juce::File::getSpecialLocation(juce::File::userHomeDirectory);
+    const auto desktop = juce::File::getSpecialLocation(juce::File::userDesktopDirectory);
+
+    const std::array<juce::File, 5> candidates {{
+        music.getChildFile("Logic/UI_Standard_Guitar/Samples"),
+        music.getChildFile("UI_Standard_Guitar/Samples"),
+        music.getChildFile("Audio Music Apps/UI_Standard_Guitar/Samples"),
+        home.getChildFile("Downloads/UI_Standard_Guitar/Samples"),
+        desktop.getChildFile("UI_Standard_Guitar/Samples")
+    }};
+
+    for (const auto& candidate : candidates)
+    {
+        const auto resolved = resolveSamplesDirectory(candidate);
+        if (resolved.isDirectory() && resolved.getChildFile("Sus_Down").isDirectory())
+            return resolved;
+    }
+
+    return candidates[0];
+}
+
 bool SampleBank::parseNoteAndRoundRobin(const juce::String& stem, int& outMidiNote, int& outRrIndex)
 {
     if (stem.startsWithIgnoreCase("Voice"))

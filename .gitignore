@@ -1,5 +1,7 @@
 build/
 build-*/
+dist/
+*.zip
 .DS_Store
 *.xcodeproj
 *.xcworkspace

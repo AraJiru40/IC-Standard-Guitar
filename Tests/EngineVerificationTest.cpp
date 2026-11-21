@@ -93,7 +93,7 @@ int renderAndMeasureOnsetSamples(icguitar::GuitarSynthEngine& engine,
 
 int main()
 {
-    const juce::File samplesDir(icguitar::SampleBank::kDefaultSamplesPath);
+    const juce::File samplesDir = icguitar::SampleBank::getDefaultSamplesDirectory();
     if (!samplesDir.isDirectory())
     {
         std::cerr << "FAIL: Samples directory missing: " << samplesDir.getFullPathName() << "\n";

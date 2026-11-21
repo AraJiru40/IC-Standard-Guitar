@@ -1,11 +1,41 @@
 cmake_minimum_required(VERSION 3.22)
+
+if(APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0" CACHE STRING "")
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "Build Universal Binary" FORCE)
+endif()
+
 project(ICStandardGuitar VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0" CACHE STRING "")
 
-set(JUCE_DIR "/Users/daioshima/ClaudeCode/chord-pad-au/JUCE" CACHE PATH "Path to local JUCE")
+set(JUCE_DIR "" CACHE PATH "Path to local JUCE")
+if(NOT JUCE_DIR AND DEFINED ENV{JUCE_DIR})
+    set(JUCE_DIR "$ENV{JUCE_DIR}")
+endif()
+if(NOT EXISTS "${JUCE_DIR}/CMakeLists.txt")
+    foreach(_cand
+        "${CMAKE_CURRENT_SOURCE_DIR}/JUCE"
+        "$ENV{HOME}/ClaudeCode/chord-pad-au/JUCE"
+        "$ENV{HOME}/JUCE")
+        if(EXISTS "${_cand}/CMakeLists.txt")
+            set(JUCE_DIR "${_cand}")
+            break()
+        endif()
+    endforeach()
+endif()
+if(NOT EXISTS "${JUCE_DIR}/CMakeLists.txt")
+    message(FATAL_ERROR "JUCE not found. Pass -DJUCE_DIR=/path/to/JUCE")
+endif()
+
+# Strip absolute local workspace/home paths from __FILE__ and debug metadata
+add_compile_options(
+    "-ffile-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=."
+    "-ffile-prefix-map=${JUCE_DIR}=JUCE"
+    "-ffile-prefix-map=$ENV{HOME}=~"
+)
+
 add_subdirectory("${JUCE_DIR}" "${CMAKE_BINARY_DIR}/JUCE")
 
 # Core DSP & sample engine (shared between the plugin and automated tests)

@@ -49,9 +49,6 @@ struct BankData
 class SampleBank
 {
 public:
-    static constexpr const char* kDefaultSamplesPath =
-        "/Users/daioshima/Music/Logic/UI_Standard_Guitar/Samples";
-
     SampleBank();
     ~SampleBank();
 
@@ -99,6 +96,9 @@ public:
     juce::String getLastError() const;
 
     static juce::File resolveSamplesDirectory(const juce::File& candidate);
+    static juce::File getDefaultSamplesDirectory();
+    static juce::File getSavedSamplesDirectory();
+    static void saveSamplesDirectoryPreference(const juce::File& dir);
     static bool parseNoteAndRoundRobin(const juce::String& stem, int& outMidiNote, int& outRrIndex);
     static int computeOnsetSample(const juce::AudioBuffer<float>& buffer, double sampleRate);
 

@@ -23,7 +23,8 @@ ICStandardGuitarProcessor::ICStandardGuitarProcessor()
     pendingRequests.reserve(16);
     scheduledAuditionEvents.reserve(64);
 
-    const juce::File defaultDir(configuredSamplesPath);
+    const auto defaultDir = icguitar::SampleBank::getDefaultSamplesDirectory();
+    configuredSamplesPath = defaultDir.getFullPathName();
     if (icguitar::SampleBank::resolveSamplesDirectory(defaultDir).isDirectory())
         sampleBank.startAsyncLoad(defaultDir);
 }
@@ -256,6 +257,7 @@ void ICStandardGuitarProcessor::setSamplesDirectory(const juce::File& dir)
         const juce::ScopedLock sl(pathLock);
         configuredSamplesPath = resolved.getFullPathName();
     }
+    icguitar::SampleBank::saveSamplesDirectoryPreference(resolved);
     sampleBank.startAsyncLoad(resolved);
 }
 

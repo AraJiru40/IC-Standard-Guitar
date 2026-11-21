@@ -76,7 +76,7 @@ private:
     std::atomic<float>* outputGainParam = nullptr;
 
     mutable juce::CriticalSection pathLock;
-    juce::String configuredSamplesPath { icguitar::SampleBank::kDefaultSamplesPath };
+    juce::String configuredSamplesPath;
 
     juce::SpinLock auditionLock;
     struct QueuedAuditionRequest
