@@ -16,8 +16,16 @@ Unreal Instruments の **Standard Guitar**（各自で取得したローカル�
   - コード解放時に全弦分のリリースノイズが同時に鳴るのを防ぐため、80ms のクールダウンで和音あたり最大 1 回のみ控えめに鳴らします。
 - **自動ストローク方向検出 (`Auto Strum`)**
   - 85ms 以内の連続ノートのピッチ進行からダウン／アップストロークを自動判定し、`Sus_Down` / `Sus_Up`（または `Mute_Down` / `Mute_Up`）を切り替えます。
+- **インスタコード CC#80 ルートボタン連動ミュート (`IC CC#80 Auto`)**
+  - インスタコードのルートボタン押下／解放で送出される `CC#80` に連動し、実音（`Sus_Down` / `Sus_Up`）とミュート音（`Finger Mute` または `Palm Mute`）をリアルタイムに切り替えます（極性反転ボタン・ヘッダーステータス表示付き）。
 - **同音クロスフェード**
   - 同じ音程が連打された際、既存のボイスを 8ms でクロスフェード・アウトさせ、途切れや不自然なクリックを防ぎます。
+
+## バージョニング規則
+
+- **現在バージョン**: `v1.1.0`
+- **機能追加（MINOR）**: `+0.1.0` ずつカウントアップ（例: `1.0.0` → `1.1.0` → `1.2.0`）
+- **不具合修正のみ（PATCH）**: `+0.0.1` ずつカウントアップ（例: `1.1.0` → `1.1.1`）
 
 ---
 
@@ -26,7 +34,7 @@ Unreal Instruments の **Standard Guitar**（各自で取得したローカル�
 1. **Standard Guitar 本体の準備**
    - Unreal Instruments 公式から `UI_Standard_Guitar` をダウンロードし、解凍したフォルダを `~/Music/Logic/UI_Standard_Guitar`（または `~/Music/UI_Standard_Guitar` / `~/Downloads/UI_Standard_Guitar` 等）に配置します。
 2. **プラグインの配置**
-   - GitHub Releases から `IC-Standard-Guitar-v1.0.0-macOS-Universal.zip` をダウンロードして解凍します。
+   - GitHub Releases から `IC-Standard-Guitar-v1.1.0-macOS-Universal.zip` をダウンロードして解凍します。
    - `IC Standard Guitar.component` を以下のフォルダへコピーします：
      - `~/Library/Audio/Plug-Ins/Components/`（または `/Library/Audio/Plug-Ins/Components/`）
 3. **macOS Gatekeeper の隔離属性を解除（初回のみ）**
@@ -67,7 +75,7 @@ cmake --build build --config Release -j8
 ./Scripts/package-release.sh
 ```
 
-`dist/IC-Standard-Guitar-v1.0.0-macOS-Universal.zip` が生成されます。
+`dist/IC-Standard-Guitar-v1.1.0-macOS-Universal.zip` が生成されます。
 
 ### テスト・検証
 
